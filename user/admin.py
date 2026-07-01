@@ -19,7 +19,7 @@ class UserAdmin(BaseUserAdmin):
 
 # Unregister the original User admin, then register the new one
 admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+
 
 
 
@@ -122,3 +122,57 @@ class WithdrawalInfoAdmin(admin.ModelAdmin):
         'litecoin_address',
         'usdt_trc20_address',
     )
+
+
+
+
+from django.contrib import admin
+from django.urls import path
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from .forms import BroadcastEmailForm
+from .utils import send_admin_broadcast_email
+
+User = get_user_model()
+
+
+class UserAdmin(admin.ModelAdmin):  # keep your existing UserAdmin config, just add the parts below
+    change_list_template = "admin/user/user_changelist.html"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                "send-broadcast-email/",
+                self.admin_site.admin_view(self.send_broadcast_email),
+                name="send_broadcast_email",
+            ),
+        ]
+        return custom_urls + urls
+
+    def send_broadcast_email(self, request):
+        if request.method == "POST":
+            form = BroadcastEmailForm(request.POST)
+            if form.is_valid():
+                subject = form.cleaned_data["subject"]
+                message = form.cleaned_data["message"]
+                send_to_all = form.cleaned_data["send_to_all"]
+
+                recipients = User.objects.all() if send_to_all else form.cleaned_data["users"]
+
+                sent = 0
+                for user in recipients:
+                    if user.email:
+                        if send_admin_broadcast_email(user, subject, message):
+                            sent += 1
+
+                messages.success(request, f"Email sent to {sent} user(s).")
+                return redirect("..")
+        else:
+            form = BroadcastEmailForm()
+
+        return render(request, "admin/send_broadcast_email.html", {"form": form})
+
+
+admin.site.register(User, UserAdmin)

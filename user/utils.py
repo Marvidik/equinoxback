@@ -79,83 +79,26 @@ def process_matured_investments():
 
     return {"matured": matured_count, "reinvested": reinvested_count}
 
+from django.template.loader import render_to_string
 
-def send_deposit_mail(email, amount):
+LOGO_URL = "https://res.cloudinary.com/dpuvtcctg/image/upload/v1782941110/5f1f92ad-e821-4512-b4b3-423f7021e1d4_nqqkfn.jpg"  # replace with your real logo URL
+
+
+def send_deposit_mail(email, amount, user_name=None):
     try:
         subject = "Deposit Request"
-        html_content = """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body {{
-                    background-color: #f0f4f8;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                }}
-                .container {{
-                    max-width: 600px;
-                    margin: 30px auto;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }}
-                .header {{
-                    background-color: #0051a2;
-                    color: white;
-                    padding: 20px;
-                    text-align: center;
-                }}
-                .content {{
-                    padding: 20px;
-                    color: #333;
-                }}
-                .content h2 {{
-                    color: #0051a2;
-                }}
-                table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }}
-                td {{
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                }}
-                .footer {{
-                    background-color: #f0f4f8;
-                    text-align: center;
-                    padding: 15px;
-                    font-size: 14px;
-                    color: #888;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>Deposit Request</h1>
-                </div>
-                <div class="content">
-                    <h2>Hello ,</h2>
-                    <p>You submitted a <strong>Deposit</strong> — request for your account.</p>
-                    <p>Amount:${amount}</p>
-                    <p>Your request has been received and will be processed shortly</p>
+        message = f"""
+        <p>You submitted a <strong>Deposit</strong> request for your account.</p>
+        <p><strong>Amount:</strong> ${amount}</p>
+        <p>Your request has been received and will be processed shortly.</p>
+        """
 
-                    <p style="margin-top: 20px;">Please keep your login credentials safe. Our platform will never ask for your password, OTP, or personal codes.</p>
-                    <p>– The Equinox Global Assets Team</p>
-                </div>
-                <div class="footer">
-                    &copy; 2025 Equinox Global Assets. All rights reserved.
-                </div>
-            </div>
-        </body>
-        </html>
-        """.format(amount=amount)
+        html_content = render_to_string("emails/admin_broadcast.html", {
+            "user_name": user_name or "there",
+            "subject": subject,
+            "message": message,
+            "logo_url": LOGO_URL,
+        })
 
         BrevoEmailService.send_email(
             subject=subject,
@@ -168,82 +111,21 @@ def send_deposit_mail(email, amount):
         return False
 
 
-def send_withdrawal_mail(email, amount):
+def send_withdrawal_mail(email, amount, user_name=None):
     try:
         subject = "Withdrawal Request"
-        html_content = """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body {{
-                    background-color: #f0f4f8;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                }}
-                .container {{
-                    max-width: 600px;
-                    margin: 30px auto;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }}
-                .header {{
-                    background-color: #0051a2;
-                    color: white;
-                    padding: 20px;
-                    text-align: center;
-                }}
-                .content {{
-                    padding: 20px;
-                    color: #333;
-                }}
-                .content h2 {{
-                    color: #0051a2;
-                }}
-                table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }}
-                td {{
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                }}
-                .footer {{
-                    background-color: #f0f4f8;
-                    text-align: center;
-                    padding: 15px;
-                    font-size: 14px;
-                    color: #888;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>Withdrawal Request</h1>
-                </div>
-                <div class="content">
-                    <h2>Hello ,</h2>
-                    <p>You submitted a <strong>Withdrawal</strong> — request for your account.</p>
-                    <p>Amount: ${amount}</p>
-                    <p>Your request has been received and will be processed shortly</p>
+        message = f"""
+        <p>You submitted a <strong>Withdrawal</strong> request for your account.</p>
+        <p><strong>Amount:</strong> ${amount}</p>
+        <p>Your request has been received and will be processed shortly.</p>
+        """
 
-                    <p style="margin-top: 20px;">Please keep your login credentials safe. Our platform will never ask for your password, OTP, or personal codes.</p>
-                    <p>– The Equinox Global Assets Team</p>
-                </div>
-                <div class="footer">
-                    &copy; 2025 Equinox Global Assets. All rights reserved.
-                </div>
-            </div>
-        </body>
-        </html>
-        """.format(amount=amount)
+        html_content = render_to_string("emails/admin_broadcast.html", {
+            "user_name": user_name or "there",
+            "subject": subject,
+            "message": message,
+            "logo_url": LOGO_URL,
+        })
 
         BrevoEmailService.send_email(
             subject=subject,
@@ -256,82 +138,21 @@ def send_withdrawal_mail(email, amount):
         return False
 
 
-def send_Trading_mail(email, amount, plan):
+def send_Trading_mail(email, amount, plan, user_name=None):
     try:
         subject = "Trade"
-        html_content = """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body {{
-                    background-color: #f0f4f8;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                }}
-                .container {{
-                    max-width: 600px;
-                    margin: 30px auto;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }}
-                .header {{
-                    background-color: #0051a2;
-                    color: white;
-                    padding: 20px;
-                    text-align: center;
-                }}
-                .content {{
-                    padding: 20px;
-                    color: #333;
-                }}
-                .content h2 {{
-                    color: #0051a2;
-                }}
-                table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }}
-                td {{
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                }}
-                .footer {{
-                    background-color: #f0f4f8;
-                    text-align: center;
-                    padding: 15px;
-                    font-size: 14px;
-                    color: #888;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>Trade</h1>
-                </div>
-                <div class="content">
-                    <h2>Hello ,</h2>
-                    <p>You started a <strong>{plan} Trade</strong> — in your account.</p>
-                    <p>Amount: ${amount}</p>
-                    <p>Your trade profit will be calculated and credited to you after 24hrs</p>
+        message = f"""
+        <p>You started a <strong>{plan} Trade</strong> in your account.</p>
+        <p><strong>Amount:</strong> ${amount}</p>
+        <p>Your trade profit will be calculated and credited to you after due time.</p>
+        """
 
-                    <p style="margin-top: 20px;">Please keep your login credentials safe. Our platform will never ask for your password, OTP, or personal codes.</p>
-                    <p>– The Equinox Global Assets Team</p>
-                </div>
-                <div class="footer">
-                    &copy; 2025 Equinox Global Assets. All rights reserved.
-                </div>
-            </div>
-        </body>
-        </html>
-        """.format(amount=amount, plan=plan)
+        html_content = render_to_string("emails/admin_broadcast.html", {
+            "user_name": user_name or "there",
+            "subject": subject,
+            "message": message,
+            "logo_url": LOGO_URL,
+        })
 
         BrevoEmailService.send_email(
             subject=subject,
@@ -341,4 +162,23 @@ def send_Trading_mail(email, amount, plan):
         return True
     except Exception as e:
         print(f"Error Trading email: {str(e)}")
+        return False
+
+
+def send_admin_broadcast_email(user, subject, message):
+    try:
+        html_content = render_to_string("emails/admin_broadcast.html", {
+            "user_name": getattr(user, "first_name", None) or getattr(user, "username", None) or "there",
+            "message": message,
+            "logo_url": LOGO_URL,
+        })
+
+        BrevoEmailService.send_email(
+            subject=subject,
+            html_content=html_content,
+            recipients=[user.email],
+        )
+        return True
+    except Exception as e:
+        print(f"Error sending admin broadcast email to {user.email}: {str(e)}")
         return False
