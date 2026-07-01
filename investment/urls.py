@@ -20,9 +20,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-admin.site.site_header = "Parkland Admin"
-admin.site.site_title = "Parkland Admin"
-admin.site.index_title = "Welcome to Parkland"
+admin.site.site_header = "Equinox Global Admin"
+admin.site.site_title = "Equinox Global Admin"
+admin.site.index_title = "Welcome to Equinox Global"
 
 
 urlpatterns = [

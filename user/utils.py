@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.utils.html import format_html
 import os
 from django.utils.timezone import now,timedelta
+from .email_service import BrevoEmailService
 
 
 def update_user_account(user):
@@ -79,10 +80,10 @@ def process_matured_investments():
     return {"matured": matured_count, "reinvested": reinvested_count}
 
 
-def send_deposit_mail(email,amount):
+def send_deposit_mail(email, amount):
     try:
         subject = "Deposit Request"
-        message = format_html("""
+        html_content = """
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -143,33 +144,34 @@ def send_deposit_mail(email,amount):
                     <h2>Hello ,</h2>
                     <p>You submitted a <strong>Deposit</strong> — request for your account.</p>
                     <p>Amount:${amount}</p>
-                    <p>Your request has been received and will be processed shortly</p>         
+                    <p>Your request has been received and will be processed shortly</p>
 
                     <p style="margin-top: 20px;">Please keep your login credentials safe. Our platform will never ask for your password, OTP, or personal codes.</p>
-                    <p>– The Parkland Team</p>
+                    <p>– The Equinox Global Assets Team</p>
                 </div>
                 <div class="footer">
-                    &copy; 2025 Parkland Oil and Gas. All rights reserved.
+                    &copy; 2025 Equinox Global Assets. All rights reserved.
                 </div>
             </div>
         </body>
         </html>
-        """, amount=amount)
+        """.format(amount=amount)
 
-        from_email = os.getenv('DEFAULT_FROM_EMAIL')
-        recipient_list = [email]
-
-        send_mail(subject, '', from_email, recipient_list, html_message=message, fail_silently=False)
+        BrevoEmailService.send_email(
+            subject=subject,
+            html_content=html_content,
+            recipients=[email],
+        )
         return True
     except Exception as e:
-        print(f"Error sending welcome email: {str(e)}")
+        print(f"Error sending deposit email: {str(e)}")
         return False
 
 
-def send_withdrawal_mail(email,amount):
+def send_withdrawal_mail(email, amount):
     try:
         subject = "Withdrawal Request"
-        message = format_html("""
+        html_content = """
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -230,37 +232,34 @@ def send_withdrawal_mail(email,amount):
                     <h2>Hello ,</h2>
                     <p>You submitted a <strong>Withdrawal</strong> — request for your account.</p>
                     <p>Amount: ${amount}</p>
-                    <p>Your request has been received and will be processed shortly</p>         
+                    <p>Your request has been received and will be processed shortly</p>
 
                     <p style="margin-top: 20px;">Please keep your login credentials safe. Our platform will never ask for your password, OTP, or personal codes.</p>
-                    <p>– The Parkland Team</p>
+                    <p>– The Equinox Global Assets Team</p>
                 </div>
                 <div class="footer">
-                    &copy; 2025 Parkland Oil and Gas. All rights reserved.
+                    &copy; 2025 Equinox Global Assets. All rights reserved.
                 </div>
             </div>
         </body>
         </html>
-        """, amount=amount)
+        """.format(amount=amount)
 
-        from_email = os.getenv('DEFAULT_FROM_EMAIL')
-        recipient_list = [email]
-
-        send_mail(subject, '', from_email, recipient_list, html_message=message, fail_silently=False)
+        BrevoEmailService.send_email(
+            subject=subject,
+            html_content=html_content,
+            recipients=[email],
+        )
         return True
     except Exception as e:
-        print(f"Error sending welcome email: {str(e)}")
+        print(f"Error sending withdrawal email: {str(e)}")
         return False
 
 
-
-
-
-
-def send_Trading_mail(email,amount, plan):
+def send_Trading_mail(email, amount, plan):
     try:
         subject = "Trade"
-        message = format_html("""
+        html_content = """
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -319,25 +318,26 @@ def send_Trading_mail(email,amount, plan):
                 </div>
                 <div class="content">
                     <h2>Hello ,</h2>
-                    <p>You started a <strong>{plan}  Trade</strong> — in your account.</p>
+                    <p>You started a <strong>{plan} Trade</strong> — in your account.</p>
                     <p>Amount: ${amount}</p>
-                    <p>Your trade profit  will be calculated and credited to you after 24hrs</p>         
+                    <p>Your trade profit will be calculated and credited to you after 24hrs</p>
 
                     <p style="margin-top: 20px;">Please keep your login credentials safe. Our platform will never ask for your password, OTP, or personal codes.</p>
-                    <p>– The Parkland Team</p>
+                    <p>– The Equinox Global Assets Team</p>
                 </div>
                 <div class="footer">
-                    &copy; 2025 Parkland Oil and Gas. All rights reserved.
+                    &copy; 2025 Equinox Global Assets. All rights reserved.
                 </div>
             </div>
         </body>
         </html>
-        """, amount=amount, plan= plan)
+        """.format(amount=amount, plan=plan)
 
-        from_email = os.getenv('DEFAULT_FROM_EMAIL')
-        recipient_list = [email]
-
-        send_mail(subject, '', from_email, recipient_list, html_message=message, fail_silently=False)
+        BrevoEmailService.send_email(
+            subject=subject,
+            html_content=html_content,
+            recipients=[email],
+        )
         return True
     except Exception as e:
         print(f"Error Trading email: {str(e)}")
