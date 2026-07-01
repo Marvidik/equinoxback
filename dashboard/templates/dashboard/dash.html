@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     {% load humanize %}
@@ -9,10 +10,12 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="{% static 'dashboard/dash.css' %}?v=126"">
     <!-- Include SweetAlert2 from CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
 
 
 </head>
+
 <body>
     <div class="header">
         <div class="user-avatar">Pk</div>
@@ -20,9 +23,9 @@
             <!-- <input type="text" class="search-bar" placeholder="Search"> -->
             <div class="user-profile">
                 <button class="update-btn" onclick="updateAccounts()">Update</button>
-               
-               
-                <a href="https://parkland.pythonanywhere.com/admin/"><button class="update-btn2">Main Admin</button></a>
+
+
+                <a href="https://banko.pythonanywhere.com/admin/"><button class="update-btn2">Main Admin</button></a>
             </div>
         </div>
     </div>
@@ -43,7 +46,7 @@
             </div>
         </div>
 
-         <div class="stat-card deposit">
+        <div class="stat-card deposit">
             <div class="stat-header">
                 <span class="stat-title">Deposit</span>
                 <div class="stat-icon deposit">
@@ -58,7 +61,7 @@
             </div>
         </div>
 
-         <div class="stat-card withdrawal">
+        <div class="stat-card withdrawal">
             <div class="stat-header">
                 <span class="stat-title">Withdrawal</span>
                 <div class="stat-icon withdrawal">
@@ -69,7 +72,7 @@
             <div class="stat-value">${{withdrawal_total_amount}}</div>
             <div class="stat-change negative">
                 <span class="change-arrow">▼</span>
-                <span>{{withdrawal_read_count}}  Withdrawals Completed</span>
+                <span>{{withdrawal_read_count}} Withdrawals Completed</span>
             </div>
         </div>
 
@@ -84,7 +87,7 @@
             <div class="stat-value">${{investment_total_amount}}</div>
             <div class="stat-change positive">
                 <span class="change-arrow">▲</span>
-                <span>{{investment_read_count}}  Investments Completed</span>
+                <span>{{investment_read_count}} Investments Completed</span>
             </div>
         </div>
 
@@ -104,14 +107,14 @@
             </div>
         </div>
 
-       
+
     </div>
 
     <div class="table-section">
         <div class="table-card">
             <div class="table-header">
-                <h2 class="table-title">Parkland User Data Information</h2>
-               
+                <h2 class="table-title">Equinox User Data Information</h2>
+
             </div>
             <div class="table-container">
                 <table class="data-table">
@@ -126,7 +129,7 @@
                             <th>Bonus</th>
                             <th>Deposit</th>
                             <th>KYC Status</th>
-                          
+
                         </tr>
                     </thead>
                     <tbody>
@@ -147,14 +150,14 @@
                             <td class="amount positive">${{ u.deposit|intcomma }}</td>
                             <td>
                                 {% if u.kyc %}
-                                    <span class="status verified">Verified</span>
+                                <span class="status verified">Verified</span>
                                 {% else %}
-                                    <span class="status pending">Not Verified</span>
+                                <span class="status pending">Not Verified</span>
                                 {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
-                       
+
                     </tbody>
                 </table>
             </div>
@@ -174,46 +177,47 @@
     </div>
 
     <script>
-    function updateAccounts() {
-        // Show loading
-        Swal.fire({
-            title: 'Updating...',
-            text: 'Please wait while all user accounts are being updated.',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-        fetch("/update-users/", {
-            method: "GET",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest"
-            },
-            credentials: "same-origin"
-        })
-        .then(response => response.json())
-        .then(data => {
+        function updateAccounts() {
+            // Show loading
             Swal.fire({
-                icon: 'success',
-                title: 'Update Complete',
-                text: data.message,
-                confirmButtonColor: '#3085d6'
+                title: 'Updating...',
+                text: 'Please wait while all user accounts are being updated.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
             });
-            location.reload(); 
-        })
-        .catch(error => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Update Failed',
-                text: 'Something went wrong while updating user accounts.',
-                confirmButtonColor: '#d33'
-            });
-            console.error("Error:", error);
-        });
-    }
-</script>
 
-   
+            fetch("/update-users/", {
+                method: "GET",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                credentials: "same-origin"
+            })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Update Complete',
+                        text: data.message,
+                        confirmButtonColor: '#3085d6'
+                    });
+                    location.reload();
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update Failed',
+                        text: 'Something went wrong while updating user accounts.',
+                        confirmButtonColor: '#d33'
+                    });
+                    console.error("Error:", error);
+                });
+        }
+    </script>
+
+
 </body>
+
 </html>
