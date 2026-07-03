@@ -17,7 +17,7 @@ def generate_numeric_otp(length=4):
 
 from django.template.loader import render_to_string
  
-LOGO_URL = "https://yourdomain.com/static/logo.png"  # replace with your real logo URL
+LOGO_URL = "https://res.cloudinary.com/dpuvtcctg/image/upload/v1782941110/5f1f92ad-e821-4512-b4b3-423f7021e1d4_nqqkfn.jpg"  # replace with your real logo URL
  
  
 def send_welcome_mail(email, full_name, username, account_type, user_id):
