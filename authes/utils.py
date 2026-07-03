@@ -4,6 +4,7 @@ import os
 import random
 import string
 from django.contrib.auth.models import User
+from user.email_service import BrevoEmailService
 from user.models import ReferalBonus,ReferalList, UserProfile
 from user.utils import update_user_account
 
@@ -14,197 +15,80 @@ def generate_numeric_otp(length=4):
 
 
 
-def send_welcome_mail(email, full_name, username,account_type,user_id):
+from django.template.loader import render_to_string
+ 
+LOGO_URL = "https://yourdomain.com/static/logo.png"  # replace with your real logo URL
+ 
+ 
+def send_welcome_mail(email, full_name, username, account_type, user_id):
     try:
-        subject = "Welcome to ZyntrixOptions"
-        message = format_html("""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body {{
-                    background-color: #f0f4f8;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                }}
-                .container {{
-                    max-width: 600px;
-                    margin: 30px auto;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }}
-                .header {{
-                    background-color: #0051a2;
-                    color: white;
-                    padding: 20px;
-                    text-align: center;
-                }}
-                .content {{
-                    padding: 20px;
-                    color: #333;
-                }}
-                .content h2 {{
-                    color: #0051a2;
-                }}
-                table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }}
-                td {{
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                }}
-                .footer {{
-                    background-color: #f0f4f8;
-                    text-align: center;
-                    padding: 15px;
-                    font-size: 14px;
-                    color: #888;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>Welcome to ZyntrixOptions</h1>
-                </div>
-                <div class="content">
-                    <h2>Hello {full_name},</h2>
-                    <p>Thank you for joining <strong>ZyntrixOptions</strong> — your new home for smart, secure, and rewarding investments.</p>
-                    <p>Here’s a quick summary of your profile:</p>
-                    <table>
-                        <tr>
-                            <td><strong>Username:</strong></td>
-                            <td>{username}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Account Type:</strong></td>
-                            <td>{account_type}</td>
-                        </tr>
-                    </table>
-                    <p>Verify Your Account with the Link Below:</p>
-                    <p>
-                        <a href="https://www.zyntrixoptions.com/auth/verify-account?user_id={user_id}">
-                            Click here to verify your account
-                        </a>
-                    </p>
-                    <p style="margin-top: 20px;">Please keep your login credentials safe. Our platform will never ask for your password, OTP, or personal codes.</p>
-                    <p>We're excited to have you on board.</p>
-                    <p>– The ZyntrixOptions Team</p>
-                </div>
-                <div class="footer">
-                    &copy; 2025 ZyntrixOptions. All rights reserved.
-                </div>
-            </div>
-        </body>
-        </html>
-        """, full_name=full_name, username=username, account_type=account_type,user_id=user_id)
-
-        from_email = os.getenv('DEFAULT_FROM_EMAIL')
-        recipient_list = [email]
-
-        send_mail(subject, '', from_email, recipient_list, html_message=message, fail_silently=False)
+        subject = "Welcome to Equinox Global Assets"
+        message = f"""
+        <p>Thank you for joining <strong>Equinox Global Assets</strong> — your new home for smart, secure, and rewarding investments.</p>
+        <p>Here's a quick summary of your profile:</p>
+        <table style="width:100%; border-collapse: collapse; margin-top: 16px; margin-bottom: 16px;">
+            <tr>
+                <td style="padding:10px; border:1px solid #eef0f2;"><strong>Username:</strong></td>
+                <td style="padding:10px; border:1px solid #eef0f2;">{username}</td>
+            </tr>
+            <tr>
+                <td style="padding:10px; border:1px solid #eef0f2;"><strong>Account Type:</strong></td>
+                <td style="padding:10px; border:1px solid #eef0f2;">{account_type}</td>
+            </tr>
+        </table>
+        <p>Verify your account with the link below:</p>
+        <p>
+            <a href="https://www.equinoxglobalassets.com/auth/verify-account?user_id={user_id}" class="btn">
+                Click here to verify your account
+            </a>
+        </p>
+        <p>We're excited to have you on board.</p>
+        """
+ 
+        html_content = render_to_string("emails/admin_broadcast.html", {
+            "user_name": full_name,
+            "subject": subject,
+            "message": message,
+            "logo_url": LOGO_URL,
+        })
+ 
+        BrevoEmailService.send_email(
+            subject=subject,
+            html_content=html_content,
+            recipients=[email],
+        )
         return True
     except Exception as e:
         print(f"Error sending welcome email: {str(e)}")
         return False
-    
-
-
+ 
+ 
 def send_otp_mail(email, otp):
     try:
         subject = "OTP Request"
-        message = format_html("""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body {{
-                    background-color: #f0f4f8;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                }}
-                .container {{
-                    max-width: 600px;
-                    margin: 30px auto;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                }}
-                .header {{
-                    background-color: #0051a2;
-                    color: white;
-                    padding: 20px;
-                    text-align: center;
-                }}
-                .content {{
-                    padding: 20px;
-                    color: #333;
-                }}
-                .content h2 {{
-                    color: #0051a2;
-                }}
-                table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }}
-                td {{
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                }}
-                .footer {{
-                    background-color: #f0f4f8;
-                    text-align: center;
-                    padding: 15px;
-                    font-size: 14px;
-                    color: #888;
-                }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>OTP Request</h1>
-                </div>
-                <div class="content">
-                    <h2>Hello ,</h2>
-                    <p>You requested for <strong>OTP</strong> —  for your account.</p>
-                    <p>Your Otp Is:</p>
-                    
-                    <h2>OTP: {otp}</h2>
-
-                    <p style="margin-top: 20px;">Please keep your login credentials safe. Our platform will never ask for your password, OTP, or personal codes.</p>
-                    <p>We're excited to have you on board.</p>
-                    <p>– The ZyntrixOptions Team</p>
-                </div>
-                <div class="footer">
-                    &copy; 2025 ZyntrixOptions. All rights reserved.
-                </div>
-            </div>
-        </body>
-        </html>
-        """, otp=otp)
-
-        from_email = os.getenv('DEFAULT_FROM_EMAIL')
-        recipient_list = [email]
-
-        send_mail(subject, '', from_email, recipient_list, html_message=message, fail_silently=False)
+        message = f"""
+        <p>You requested an <strong>OTP</strong> for your account.</p>
+        <p>Your OTP is:</p>
+        <h2 style="color:#14b8a6; letter-spacing: 4px;">{otp}</h2>
+        <p>We're excited to have you on board.</p>
+        """
+ 
+        html_content = render_to_string("emails/admin_broadcast.html", {
+            "user_name": "there",
+            "subject": subject,
+            "message": message,
+            "logo_url": LOGO_URL,
+        })
+ 
+        BrevoEmailService.send_email(
+            subject=subject,
+            html_content=html_content,
+            recipients=[email],
+        )
         return True
     except Exception as e:
-        print(f"Error sending welcome email: {str(e)}")
+        print(f"Error sending OTP email: {str(e)}")
         return False
-
 
 
 def process_referral(referee_username, new_user, bonus_amount=5):
